@@ -1,4 +1,4 @@
-# Bot actualizado con Flask dummy para Render
+# Bot actualizado para que se ejecute en segundo plano
 
 import os
 import time
@@ -150,17 +150,25 @@ if __name__ == "__main__":
     print("🤖 Agente corriendo y escuchando en Telegram...")
     app.run_polling()
 # ----- DUMMY SERVER PARA RENDER -----
-import flask
+from flask import Flask
 from threading import Thread
 
-def start_dummy_server():
-    app = flask.Flask(__name__)
-    
-    @app.route('/')
-    def home():
-        return "Bot funcionando"
+def iniciar_bot():
+    print("🤖 Agente corriendo y escuchando en Telegram...")
+    app = ApplicationBuilder().token(BOT_TOKEN).build()
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, manejar_mensaje))
+    app.run_polling()
 
-    app.run(host='0.0.0.0', port=10000)
+# Iniciar el bot en segundo plano
+Thread(target=iniciar_bot).start()
 
-Thread(target=start_dummy_server).start()
-# ------------------------------------
+# Lanzar servidor Flask en el hilo principal para que Render detecte el puerto
+app_flask = Flask(__name__)
+
+@app_flask.route('/')
+def index():
+    return "Bot funcionando (con Flask y Telegram)"
+
+port = int(os.environ.get("PORT", 10000))
+app_flask.run(host="0.0.0.0", port=port)
+
