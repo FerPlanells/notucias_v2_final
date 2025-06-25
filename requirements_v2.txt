@@ -1,0 +1,7 @@
+python-telegram-bot==20.8
+pydrive2
+openai
+python-dotenv
+newspaper3k
+lxml
+lxml-html-clean
