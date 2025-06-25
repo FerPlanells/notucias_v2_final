@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 Agente de Telegram: Resumen de noticias relevantes de educación y subida a Google Drive.
+Solucionados algunos errores de tipeo
 """
 
 import os
@@ -61,8 +62,7 @@ _ensure_file("credentials.json", "GOOGLE_CREDENTIALS_JSON", "GOOGLE_CREDENTIALS_
 
 # Autenticación y configuración de Google Drive
 gauth = GoogleAuth()
-ga
-uth.LoadCredentialsFile("credentials.json")
+gauth.LoadCredentialsFile("credentials.json")
 if not gauth.credentials:
     logging.info("Iniciando autenticación por línea de comandos de Google.")
     gauth.CommandLineAuth()
