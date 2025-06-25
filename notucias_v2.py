@@ -149,27 +149,27 @@ if __name__ == "__main__":
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, manejar_mensaje))
     print("🤖 Agente corriendo y escuchando en Telegram...")
     app.run_polling()
+    
 # ----- DUMMY SERVER PARA RENDER -----
 from flask import Flask
 from threading import Thread
 
-# Dummy Flask en hilo secundario
-def start_flask():
-    app = Flask(__name__)
+app = Flask(__name__)
 
-    @app.route('/')
-    def index():
-        return "Bot funcionando (Flask dummy)"
+@app.route('/')
+def home():
+    return "Bot funcionando (web dummy + telegram)"
 
+@app.before_first_request
+def iniciar_bot_en_segundo_plano():
+    def iniciar():
+        print("🤖 Bot de Telegram corriendo...")
+        bot_app = ApplicationBuilder().token(BOT_TOKEN).build()
+        bot_app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, manejar_mensaje))
+        bot_app.run_polling()
+
+    threading.Thread(target=iniciar).start()
+
+if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
     app.run(host="0.0.0.0", port=port)
-
-Thread(target=start_flask).start()
-
-# Bot en hilo principal (así tiene loop asyncio disponible)
-print("🤖 Agente corriendo y escuchando en Telegram...")
-app = ApplicationBuilder().token(BOT_TOKEN).build()
-app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, manejar_mensaje))
-app.run_polling()
-
-
