@@ -64,9 +64,15 @@ _ensure_file("credentials.json", "GOOGLE_CREDENTIALS_JSON", "GOOGLE_CREDENTIALS_
 gauth = GoogleAuth()
 gauth.LoadCredentialsFile("credentials.json")
 if not gauth.credentials:
-    logging.info("Iniciando autenticación por línea de comandos de Google.")
+    # primera vez: flujo no interactivo por CLI
     gauth.CommandLineAuth()
-    gauth.SaveCredentialsFile("credentials.json")
+elif gauth.access_token_expired:
+    # renueva usando el refresh token almacenado
+    gauth.Refresh()
+else:
+    # token aún válido
+    gauth.Authorize()
+gauth.SaveCredentialsFile("credentials.json")
 
 drive = GoogleDrive(gauth)
 
